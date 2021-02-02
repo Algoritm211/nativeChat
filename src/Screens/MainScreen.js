@@ -8,7 +8,7 @@ export default function MainScreen({navigation}) {
       <Text>Home Screen</Text>
       <Button
         title="Go to Chats"
-        onPress={() => navigation.navigate('Chat')}
+        onPress={() => navigation.navigate('chat')}
       />
     </View>
   );
