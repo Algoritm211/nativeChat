@@ -3,13 +3,32 @@ import {ScrollView, StyleSheet, Text, View} from "react-native";
 import MessageBlock from "./MessageBlock";
 import MessageSendForm from "./MessageSendForm";
 import {Icon, Button} from "react-native-elements";
+import {useDispatch, useSelector} from "react-redux";
+import {getMessages} from "../../redux/chatReducer-selector";
+import {startMessageListening, stopMessageListening} from "../../redux/chat-reducer";
 
 
 export default function ChatScreen() {
 
   const scrollRef = useRef()
+  const dispatch = useDispatch()
 
   const [isScrollButton, setIsScrollButton] = useState(false)
+
+  const messages = useSelector(getMessages)
+
+  useEffect(() => {
+    dispatch(startMessageListening())
+
+    return () => {
+      dispatch(stopMessageListening())
+    }
+  }, [])
+
+
+  const messagesBlock = messages.map((message, index) => {
+    return <MessageBlock message={message} key={index}/>
+  })
 
 
   const scrollMessagesToEnd = () => {
@@ -31,11 +50,7 @@ export default function ChatScreen() {
         onScroll={handleScroll}
         ref={scrollRef}>
         <View style={styles.messageContainer}>
-          <MessageBlock/>
-          <MessageBlock/><MessageBlock/>
-          <MessageBlock/><MessageBlock/>
-          <MessageBlock/><MessageBlock/>
-          <MessageBlock/>
+          {messagesBlock}
         </View>
       </ScrollView>
       <View>

@@ -2,15 +2,24 @@ import React from 'react'
 import { StyleSheet, TextInput, View} from "react-native";
 import {Formik} from "formik";
 import {Button, Icon} from "react-native-elements";
+import {sendMessage} from "../../redux/chat-reducer";
+import {useDispatch} from "react-redux";
 
 const MessageSendForm = (props) => {
+
+  const dispatch = useDispatch()
+  const onSubmit = (values) => {
+    if (values.message) {
+      dispatch(sendMessage(values.message))
+    }
+  }
 
 
   return (
     <View style={styles.formBlock}>
       <Formik
         initialValues={{message: ''}}
-        onSubmit={values => console.log(values)}
+        onSubmit={values => onSubmit(values)}
       >
         {({handleChange, handleSubmit, values}) => (
           <View style={styles.inputContainer}>

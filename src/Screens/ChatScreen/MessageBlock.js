@@ -3,7 +3,7 @@ import {StyleSheet, Text, View} from "react-native";
 import {Avatar} from "react-native-elements";
 
 
-const MessageBlock = () => {
+const MessageBlock = ({message}) => {
 
   return (
     <View style={styles.messageBlockContainer}>
@@ -13,12 +13,12 @@ const MessageBlock = () => {
           rounded
           source={{
             uri:
-              'https://www.memphisveterinaryspecialists.com/files/best-breeds-of-house-cats-memphis-vet-1-1.jpeg',
+              message.photo || 'https://blog.cpanel.com/wp-content/uploads/2019/08/user-01.png',
           }}
         />
       </View>
       <View style={styles.messageBlock}>
-        <Text>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cupiditate hic mollitia perspiciatis quos. Ad, amet assumenda at cum dicta dignissimos dolor eaque eligendi ex id maiores quidem quo sequi veniam.</Text>
+        <Text>{message.message}</Text>
       </View>
     </View>
 
