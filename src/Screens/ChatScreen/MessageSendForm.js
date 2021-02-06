@@ -3,11 +3,13 @@ import { StyleSheet, TextInput, View} from "react-native";
 import {Formik} from "formik";
 import {Button, Icon} from "react-native-elements";
 import {sendMessage} from "../../redux/chat-reducer";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {getWsStatus} from "../../redux/chatReducer-selector";
 
 const MessageSendForm = (props) => {
 
   const dispatch = useDispatch()
+  const status = useSelector(getWsStatus)
   const onSubmit = (values) => {
     if (values.message) {
       dispatch(sendMessage(values.message))
@@ -33,7 +35,7 @@ const MessageSendForm = (props) => {
               />
             </View>
             <View style={styles.sendButton}>
-              <Button title='Submit' onPress={() => handleSubmit()}/>
+              <Button title='Submit' onPress={() => handleSubmit()} disabled={status === 'pending'}/>
             </View>
           </View>
         )}

@@ -1,28 +1,50 @@
 
 
 
-let subscribers = []
+let subscribers = {
+  'message-subscribers': [],
+  'status-changers': []
+}
+
 let ws // WebSocket
 
 
 const closeHandler = () => {
+  notifyAboutStatusChange('pending')
   setTimeout(createChannel, 5000)
 }
 
 const handleMessage = (event) => {
   const newMessages = JSON.parse(event.data)
-  subscribers.forEach(subscriber => {
+  subscribers['message-subscribers'].forEach(subscriber => {
     subscriber(newMessages)
   })
 }
 
+const wsOpenHandler = () => {
+  notifyAboutStatusChange('ok')
+}
 
-const createChannel = () => {
+const notifyAboutStatusChange = (status) => {
+  subscribers['status-changers'].forEach(subscriber => {
+    subscriber(status)
+  })
+}
+
+const closeUp = () => {
   ws?.removeEventListener('message', handleMessage)
   ws?.removeEventListener('close', closeHandler)
+  ws?.removeEventListener('open', wsOpenHandler)
+}
+
+
+const createChannel = () => {
+  closeUp()
   ws = new WebSocket('wss://social-network.samuraijs.com/handlers/ChatHandler.ashx')
+  notifyAboutStatusChange('pending')
   ws.addEventListener('message', handleMessage)
   ws.addEventListener('close', closeHandler)
+  ws.addEventListener('open', wsOpenHandler)
 }
 
 
@@ -31,12 +53,12 @@ export const chatAPI = {
     createChannel()
   },
 
-  subscribe(callback) {
-    subscribers.push(callback)
+  subscribe(eventName, callback) {
+    subscribers[eventName].push(callback)
   },
 
-  unsubscribe(callback) {
-    subscribers = subscribers.filter(subscriber => subscriber !== callback)
+  unsubscribe(eventName, callback) {
+    subscribers[eventName] = subscribers[eventName].filter(subscriber => subscriber !== callback)
   },
 
   sendMessage(message) {
@@ -45,7 +67,6 @@ export const chatAPI = {
 
   stop() {
     subscribers = []
-    ws?.removeEventListener('message', handleMessage)
-    ws?.removeEventListener('close', closeHandler)
+    closeUp()
   }
 }
